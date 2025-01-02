@@ -33,7 +33,6 @@ build/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 
 # Ignore CLion specific files
 cmake-build-*/
