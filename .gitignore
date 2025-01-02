@@ -36,3 +36,4 @@ cmake_install.cmake
 
 # Ignore CLion specific files
 cmake-build-*/
+cmake-build-debug
