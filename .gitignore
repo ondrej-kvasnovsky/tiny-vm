@@ -1,0 +1,39 @@
+# Ignore build artifacts
+*.o
+*.a
+*.so
+*.exe
+*.out
+*.dSYM/
+*.log
+
+# Ignore temporary files
+*~
+*.swp
+*.tmp
+
+# Ignore compiled dynamic libraries
+*.dll
+*.dylib
+
+# Ignore directories created by build tools
+/build/
+/bin/
+/obj/
+/lib/
+/dist/
+build/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+
+# Ignore CMake build directories
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore CLion specific files
+cmake-build-*/
