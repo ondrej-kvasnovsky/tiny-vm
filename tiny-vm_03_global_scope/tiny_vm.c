@@ -120,7 +120,7 @@ Variable* get_shared_variable(ThreadContext* thread, const char* name) {
     return NULL;
 }
 
-jint get_value(ThreadContext* thread, const char* name) {
+t_int get_value(ThreadContext* thread, const char* name) {
     for (int i = 0; i < thread->local_scope->var_count; i++) {
         if (strcmp(thread->local_scope->variables[i].name, name) == 0) {
             return thread->local_scope->variables[i].value;
@@ -176,7 +176,7 @@ void execute_instruction(ThreadContext* thread, Instruction* instr) {
 
     switch (instr->type) {
         case PRINT: {
-            jint value = get_value(thread, instr->args[0]);
+            t_int value = get_value(thread, instr->args[0]);
             print("[Thread %d] PRINT %s = %d", thread->thread_id, instr->args[0], value);
             break;
         }
@@ -188,8 +188,8 @@ void execute_instruction(ThreadContext* thread, Instruction* instr) {
             break;
         }
         case ADD: {
-            jint val1 = get_value(thread, instr->args[1]);
-            jint val2 = get_value(thread, instr->args[2]);
+            t_int val1 = get_value(thread, instr->args[1]);
+            t_int val2 = get_value(thread, instr->args[2]);
             Variable* target = get_variable(local_scope, instr->args[0]);
             if (target) {
                 target->value = val1 + val2;

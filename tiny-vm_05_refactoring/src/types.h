@@ -4,12 +4,12 @@
 
 #include <pthread.h>
 
-typedef int32_t jint;
+typedef int32_t t_int;
 
 // Variable storage
 typedef struct Variable {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
 // Execution frame (stack frame)

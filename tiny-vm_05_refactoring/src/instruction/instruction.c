@@ -60,7 +60,7 @@ Instruction parse_instruction(const char* line) {
 void execute_instruction(ThreadContext* thread, Instruction* instr) {
     switch (instr->type) {
         case PRINT: {
-            const jint value = get_value(thread, instr->args[0]);
+            const t_int value = get_value(thread, instr->args[0]);
             print("[Thread %d] Variable %s = %d", thread->thread_id, instr->args[0], value);
             break;
         }
@@ -72,8 +72,8 @@ void execute_instruction(ThreadContext* thread, Instruction* instr) {
             break;
         }
         case ADD: {
-            jint val1 = get_value(thread, instr->args[1]);
-            jint val2 = get_value(thread, instr->args[2]);
+            t_int val1 = get_value(thread, instr->args[1]);
+            t_int val2 = get_value(thread, instr->args[2]);
             Variable* target = get_variable(thread, instr->args[0]);
             if (target) {
                 target->value = val1 + val2;

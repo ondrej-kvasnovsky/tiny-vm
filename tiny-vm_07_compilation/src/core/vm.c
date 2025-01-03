@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-VM *create_vm(char** functions[]) {
+VM* create_vm(const CompilationResult* compiled) {
     VM *vm = malloc(sizeof(VM));
 
     // Thread management
@@ -30,14 +30,14 @@ VM *create_vm(char** functions[]) {
     pthread_mutex_init(&vm->lock_mgmt_lock, NULL);
 
     // Initialize function management
-    vm->function_capacity = 10;
+    vm->function_capacity = 100;
     vm->function_count = 0;
     vm->functions = malloc(sizeof(Function) * vm->function_capacity);
     pthread_mutex_init(&vm->function_mgmt_lock, NULL);
 
-    // Load functions
-    for (int i = 0; functions[i] != NULL; i++) {
-        load_function(vm, functions[i]);
+    for (int i = 0; i < compiled->function_count; i++) {
+        vm->functions[i] = compiled->functions[i];  // Shallow copy
+        vm->function_count++;
     }
 
     return vm;
@@ -45,7 +45,7 @@ VM *create_vm(char** functions[]) {
 
 void run_vm(VM* vm) {
     // Find main function
-    const Function* main_function = find_function(vm, "main");
+    Function* main_function = find_function(vm, "main");
     if (!main_function) {
         print("[VM] Error: No main function defined");
         return;
@@ -61,6 +61,7 @@ void run_vm(VM* vm) {
 }
 
 void destroy_vm(VM *vm) {
+    // Cleanup local scopes
     for (int i = 0; i < vm->thread_count; i++) {
         destroy_local_scope(vm->threads[i].local_scope);
     }
@@ -80,12 +81,7 @@ void destroy_vm(VM *vm) {
     pthread_mutex_destroy(&vm->lock_mgmt_lock);
     free(vm->locks);
 
-    // Cleanup functions
-    for (int i = 0; i < vm->function_count; i++) {
-        free(vm->functions[i].name);
-        // Note that we don't free function->code because it points to string literals in our case - they are stored in the program's static memory. If we later change to dynamically allocate the code arrays, we would need to free those as well.
-        // free(vm->functions[i].code);
-    }
+    // Cleanup functions (pointers only)
     free(vm->functions);
     pthread_mutex_destroy(&vm->function_mgmt_lock);
 

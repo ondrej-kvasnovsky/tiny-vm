@@ -4,7 +4,7 @@
 
 #include "../types.h"
 
-ThreadContext* create_thread(VM* vm, const char** program, int start_line);
+ThreadContext* create_thread(VM* vm, const Function* function);
 
 void* execute_thread_instructions(void* arg);
 

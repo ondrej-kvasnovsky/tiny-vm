@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdarg.h> // provides functionality for functions with variable numbers of arguments (varargs)
 
-typedef int32_t jint;
+typedef int32_t t_int;
 
 // Forward declaration for VM
 typedef struct VM VM;
@@ -22,10 +22,15 @@ typedef struct {
 // Variable storage
 typedef struct {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
-
+// Execution frame (stack frame)
+typedef struct {
+    Variable* variables;
+    int var_count;
+    int var_capacity;
+} LocalScope;
 
 // Thread context
 typedef struct {

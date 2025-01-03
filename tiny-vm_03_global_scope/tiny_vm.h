@@ -9,7 +9,7 @@
 #include <stdarg.h> // provides functionality for functions with variable numbers of arguments (varargs)
 #include <time.h>
 
-typedef int32_t jint;
+typedef int32_t t_int;
 
 // Forward declaration for VM
 typedef struct VM VM;
@@ -23,7 +23,7 @@ typedef enum {
 // Variable storage
 typedef struct {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
 // Execution frame (stack frame)

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <pthread.h>
 
-typedef int32_t jint;
+typedef int32_t t_int;
 
 // Declaration for VM
 typedef struct VM VM;
@@ -13,7 +13,7 @@ typedef struct VM VM;
 // Variable storage
 typedef struct {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
 // Thread execution scope (stack frame)

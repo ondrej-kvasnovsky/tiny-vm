@@ -5,11 +5,11 @@
 #include <stdint.h>
 
 // Our VM's data types
-typedef int32_t jint;
+typedef int32_t t_int;
 
 typedef struct {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
 typedef struct {

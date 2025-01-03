@@ -3,13 +3,14 @@
 #define TINY_VM_TYPES_H
 
 #include <pthread.h>
+#include "compiler/compiler.h"
 
-typedef int32_t jint;
+typedef int32_t t_int;
 
 // Variable storage
 typedef struct Variable {
     char* name;
-    jint value;
+    t_int value;
 } Variable;
 
 // Execution frame (stack frame)
@@ -19,21 +20,15 @@ typedef struct LocalScope {
     int var_capacity;
 } LocalScope;
 
-typedef struct Function {
-    char* name;
-    const char** code;
-} Function;
-
 // Thread context
 typedef struct ThreadContext {
     LocalScope* local_scope;
-    const char** program;
-    int pc;
+    const Function* current_function; // Function being executed
+    int pc; // Points to current bytecode instruction
     pthread_t thread;
     int thread_id;
     int is_running;
     struct VM* vm;
-    char* function_name;
 } ThreadContext;
 
 // Synchronization
@@ -65,7 +60,7 @@ typedef struct VM {
     pthread_mutex_t lock_mgmt_lock;
 
     // Function management
-    Function* functions;
+    Function** functions;
     int function_count;
     int function_capacity;
     pthread_mutex_t function_mgmt_lock;

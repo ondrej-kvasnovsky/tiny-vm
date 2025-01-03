@@ -64,7 +64,7 @@ Variable* get_shared_variable(ThreadContext* thread, const char* name) {
     return NULL;
 }
 
-jint get_value(ThreadContext* thread, const char* name) {
+t_int get_value(ThreadContext* thread, const char* name) {
     for (int i = 0; i < thread->local_scope->var_count; i++) {
         if (strcmp(thread->local_scope->variables[i].name, name) == 0) {
             return thread->local_scope->variables[i].value;

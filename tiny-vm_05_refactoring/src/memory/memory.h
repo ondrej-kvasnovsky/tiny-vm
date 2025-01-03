@@ -7,7 +7,7 @@
 LocalScope* create_local_scope(void);
 void destroy_local_scope(LocalScope* local_scope);
 
-jint get_value(ThreadContext* thread, const char* name);
+t_int get_value(ThreadContext* thread, const char* name);
 
 Variable* get_variable(ThreadContext* thread, const char* name);
 Variable* get_shared_variable(ThreadContext* thread, const char* name);
