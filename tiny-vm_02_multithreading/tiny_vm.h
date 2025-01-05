@@ -21,7 +21,6 @@ typedef struct {
     Variable* variables;
     int var_count;
     int var_capacity;
-    VM* vm;  // Reference to VM
 } LocalScope;
 
 // Thread context
@@ -32,6 +31,7 @@ typedef struct {
     pthread_t thread;     // Native thread handle
     int thread_id;        // Logical thread ID
     int is_running;       // Thread status
+    VM* vm;  // Reference to VM
 } ThreadContext;
 
 // VM state

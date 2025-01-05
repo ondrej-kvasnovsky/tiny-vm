@@ -20,7 +20,6 @@ LocalScope* create_local_scope(VM* vm) {
     local_scope->var_capacity = 10;
     local_scope->var_count = 0;
     local_scope->variables = malloc(sizeof(Variable) * local_scope->var_capacity);
-    local_scope->vm = vm;  // Store reference to VM
     return local_scope;
 }
 
@@ -154,7 +153,7 @@ void* execute_thread_instructions(void* arg) {
         if (line == NULL) break;
 
         Instruction instr = parse_instruction(line);
-        execute_instruction(thread->local_scope->vm, thread, &instr);
+        execute_instruction(thread->vm, thread, &instr);
 
         thread->pc++;
     }
@@ -177,6 +176,7 @@ ThreadContext* create_thread(VM* vm, const char** program, int start_line) {
     thread->pc = start_line;
     thread->is_running = 1;
     thread->thread_id = vm->next_thread_id++;  // Assign and increment thread ID
+    thread->vm = vm;  // Store reference to VM
 
     pthread_create(&thread->thread, NULL, execute_thread_instructions, thread);
 
@@ -190,6 +190,7 @@ void start_vm(VM* vm, const char** program) {
 
     // Wait for all threads to finish
     for (int i = 0; i < vm->thread_count; i++) {
+        printf("[Main] Waiting for thread Thread %d\n", vm->threads[i].thread_id);
         pthread_join(vm->threads[i].thread, NULL);
     }
 }
