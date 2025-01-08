@@ -14,12 +14,6 @@ typedef int32_t t_int;
 // Forward declaration for VM
 typedef struct VM VM;
 
-// Variable storage location
-typedef enum {
-    LOCAL,
-    SHARED
-} VariableType;
-
 // Variable storage
 typedef struct {
     char* name;

@@ -13,7 +13,7 @@ void print(const char *format, ...) {
     struct tm tm;
     localtime_r(&t, &tm);
 
-    printf("[%04d-%02d-%02d %02d:%02d:%02d.%09ld] ",
+    printf("[%04d-%02d-%02d %02d:%02d:%02d.%06ld] ",
         tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
         tm.tm_hour, tm.tm_min, tm.tm_sec, ts.tv_nsec / 1000);
 
@@ -212,14 +212,8 @@ void execute_instruction(ThreadContext* thread, Instruction* instr) {
         case SETSHARED: {
             Variable* var = get_shared_variable(thread, instr->args[0]);
             if (var) {
-                // we could use mutex here to protect writing into shared memory
-                // but JVM doesn't automatically protect access
-                // to global/shared variables
-
-                // pthread_mutex_lock(&thread->vm->heap_lock);
                 var->value = atoi(instr->args[1]);
                 print("[Thread %d] Set-shared %s = %d", thread->thread_id, var->name, var->value);
-                // pthread_mutex_unlock(&thread->vm->heap_lock);
             }
             break;
         }
