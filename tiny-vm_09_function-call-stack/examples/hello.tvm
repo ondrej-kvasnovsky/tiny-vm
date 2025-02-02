@@ -1,0 +1,7 @@
+function greet
+set message 42
+print message
+
+function main
+sync greet
+exit

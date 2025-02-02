@@ -1,0 +1,25 @@
+function createCounter
+setshared counter 1000
+print counter
+
+function incrementCounter
+lock counter_lock
+set increment 10
+add counter increment counter
+print counter
+unlock counter_lock
+exit
+
+function decrementCounter
+lock counter_lock
+set decrement -10
+add counter decrement counter
+print counter
+unlock counter_lock
+exit
+
+function main
+sync createCounter
+async incrementCounter
+async decrementCounter
+exit
