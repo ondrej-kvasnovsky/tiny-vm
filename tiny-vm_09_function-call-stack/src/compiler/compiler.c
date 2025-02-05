@@ -71,7 +71,11 @@ static void compile_instruction(const char* line, BytecodeInstruction* bytecode,
 
         case EXIT:
             bytecode->opcode = OP_RETURN;
-            break;
+        break;
+
+        case PRINT_STACK_TRACE:
+            bytecode->opcode = OP_PRINT_STACK_TRACE;
+        break;
 
         default:
             bytecode->opcode = OP_NOP;
@@ -200,6 +204,9 @@ void print_bytecode(const Function* function) {
                 break;
             case OP_RETURN:
                 print("  %d: RETURN", i);
+                break;
+            case OP_PRINT_STACK_TRACE:
+                print("  %d: PRINT_STACK_TRACE", i);
                 break;
             default:
                 print("  %d: NOP", i);

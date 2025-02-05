@@ -15,6 +15,7 @@ typedef enum {
     SYNC,     // sync <function_name> - Execute function in current thread
     ASYNC,    // async <function_name> - Execute function in new thread
     FUNCTION,  // function <name> - Defines start of a function
+    PRINT_STACK_TRACE, // print_stack_trace - Print current call stack
 } InstructionType;
 
 typedef struct {

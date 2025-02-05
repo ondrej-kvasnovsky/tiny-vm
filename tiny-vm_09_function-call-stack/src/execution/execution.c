@@ -6,6 +6,7 @@
 #include <pthread.h>
 
 #include "../types.h"
+#include "stack.h"
 #include "../thread/thread.h"
 #include "../function/function.h"
 #include "../utils/logger.h"
@@ -13,7 +14,7 @@
 #include "../synchronization/synchronization.h"
 
 void execute_bytecode(ThreadContext* thread) {
-    const BytecodeInstruction* instr = &thread->current_function->byte_code[thread->pc];
+    const BytecodeInstruction* instr = &thread->current_frame->function->byte_code[thread->pc];
 
     switch(instr->opcode) {
         case OP_NOP:
@@ -36,9 +37,9 @@ void execute_bytecode(ThreadContext* thread) {
         }
 
         case OP_ADD: {
-            const char* target = thread->current_function->constant_pool[instr->var_index];
-            const char* op1 = thread->current_function->constant_pool[instr->var_index2];
-            const char* op2 = thread->current_function->constant_pool[instr->var_index3];
+            const char* target = thread->current_frame->function->constant_pool[instr->var_index];
+            const char* op1 = thread->current_frame->function->constant_pool[instr->var_index2];
+            const char* op2 = thread->current_frame->function->constant_pool[instr->var_index3];
 
             const t_int val1 = get_value(thread, op1);
             const t_int val2 = get_value(thread, op2);
@@ -108,8 +109,16 @@ void execute_bytecode(ThreadContext* thread) {
         }
 
         case OP_RETURN: {
-            // this should only end the current function, on stack, but not kill a thread
-            thread->is_running = 0;
+            pop_stack_frame(thread);
+            if (!thread->current_frame) {
+                thread->is_running = 0;
+            }
+            break;
+        }
+
+        case OP_PRINT_STACK_TRACE: {
+            print("[Thread %d] Stack trace requested in function '%s'", thread->thread_id, thread->current_frame->function->name);
+            print_stack_trace(thread);
             break;
         }
 
@@ -118,29 +127,51 @@ void execute_bytecode(ThreadContext* thread) {
     }
 }
 
-void sync_function(ThreadContext* caller, const Function* function) {
-    // Save caller's context
-    const Function* original_function = caller->current_function;
-    const int original_pc = caller->pc;
+void sync_function(ThreadContext* thread, const Function* function) {
+    // Save current PC as return address before pushing new frame
+    int return_pc = thread->pc;
 
-    // Set up function context
-    caller->current_function = function;
-    caller->pc = 0;
-    // caller->is_running = 1;  // Ensure we're running
+    // Push new stack frame
+    StackFrame* new_frame = push_stack_frame(thread, function);
+    new_frame->return_pc = return_pc;  // Store return point
 
-    print("[Thread %d] Sync function '%s' started", caller->thread_id, function->name);
+    // Reset PC for new function
+    thread->pc = 0;
 
-    // Execute function instructions
-    while (caller->is_running && caller->pc < function->code_length) {
-        execute_bytecode(caller);
-        caller->pc++;
-    }
+    print("[Thread %d] Sync function '%s' started", thread->thread_id, function->name);
 
-    caller->is_running = 1;  // Add this line
+    // Execute function instructions until this frame is popped
+    while (thread->current_frame == new_frame && // Check we're still in this frame
+           thread->pc < function->code_length) {
+        execute_bytecode(thread);
+        if (thread->current_frame == new_frame) { // Only increment if we haven't returned
+            thread->pc++;
+        }
+           }
 
-    // Restore caller's context
-    caller->current_function = original_function;
-    caller->pc = original_pc;
+
+//    // Save caller's context
+//    const Function* original_function = caller->current_frame->function;
+//    const int original_pc = caller->pc;
+//
+//    // Set up function context
+//    caller->current_frame->function = function;
+//    caller->pc = 0;
+//    // caller->is_running = 1;  // Ensure we're running
+//
+//    print("[Thread %d] Sync function '%s' started", caller->thread_id, function->name);
+//
+//    // Execute function instructions
+//    while (caller->is_running && caller->pc < function->code_length) {
+//        execute_bytecode(caller);
+//        caller->pc++;
+//    }
+//
+//    caller->is_running = 1;  // Add this line
+//
+//    // Restore caller's context
+//    caller->current_frame->function = original_function;
+//    caller->pc = original_pc;
 }
 
 ThreadContext* async_function(VM* vm, const Function* function) {

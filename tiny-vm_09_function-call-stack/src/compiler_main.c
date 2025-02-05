@@ -26,7 +26,7 @@ int main(const int argc, char* argv[]) {
         free_source_code(source);
         return 1;
     }
-    // print_compilation_result(compiled);
+    print_compilation_result(compiled);
 
     // Get output filename
     char* output_file = get_output_filename(argv[1], ".tvmc");

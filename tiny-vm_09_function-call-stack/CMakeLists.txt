@@ -27,6 +27,8 @@ set(COMMON_SOURCES
         src/compiler/bytecode.c
         src/compiler/source_loader.h
         src/compiler/source_loader.c
+        src/execution/stack.h
+        src/execution/stack.c
 )
 
 # Compiler executable

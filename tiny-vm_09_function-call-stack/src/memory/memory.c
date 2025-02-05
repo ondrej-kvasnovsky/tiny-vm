@@ -23,15 +23,18 @@ void destroy_local_scope(LocalScope* local_scope) {
 }
 
 Variable* get_variable(const ThreadContext* thread, const char* name) {
-    LocalScope* local_scope = thread->local_scope;
-    for (int i = 0; i < local_scope->var_count; i++) {
-        if (strcmp(local_scope->variables[i].name, name) == 0) {
-            return &local_scope->variables[i];
+    LocalScope* scope = thread->current_frame->local_scope;
+
+    // Look for existing variable in current scope only
+    for (int i = 0; i < scope->var_count; i++) {
+        if (strcmp(scope->variables[i].name, name) == 0) {
+            return &scope->variables[i];
         }
     }
 
-    if (local_scope->var_count < local_scope->var_capacity) {
-        Variable* var = &local_scope->variables[local_scope->var_count++];
+    // Create new variable in current scope if not found
+    if (scope->var_count < scope->var_capacity) {
+        Variable* var = &scope->variables[scope->var_count++];
         var->name = strdup(name);
         var->value = 0;
         return var;
@@ -65,11 +68,13 @@ Variable* get_shared_variable(const ThreadContext* thread, const char* name) {
 }
 
 t_int get_value(const ThreadContext* thread, const char* name) {
-    for (int i = 0; i < thread->local_scope->var_count; i++) {
-        if (strcmp(thread->local_scope->variables[i].name, name) == 0) {
-            return thread->local_scope->variables[i].value;
-        }
+    // First check current frame's local scope
+    Variable* local = get_variable(thread, name);
+    if (local) {
+        return local->value;
     }
+
+    // If not found in current scope, check heap for shared variables
     Variable* shared = get_shared_variable(thread, name);
     if (shared) {
         return shared->value;

@@ -63,7 +63,9 @@ void run_vm(VM* vm) {
 void destroy_vm(VM *vm) {
     // Cleanup local scopes
     for (int i = 0; i < vm->thread_count; i++) {
-        destroy_local_scope(vm->threads[i].local_scope);
+        if (vm->threads[i].current_frame) {
+            destroy_local_scope(vm->threads[i].current_frame->local_scope);
+        }
     }
 
     // Cleanup heap

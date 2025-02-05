@@ -3,7 +3,7 @@
 #include "../core/vm.h"
 #include "../execution/execution.h"
 #include "../utils/logger.h"
-#include "../memory/memory.h"
+#include "execution/stack.h"
 
 ThreadContext* create_thread(VM* vm, const Function* function) {
     pthread_mutex_lock(&vm->thread_mgmt_lock);
@@ -14,13 +14,14 @@ ThreadContext* create_thread(VM* vm, const Function* function) {
     }
 
     ThreadContext* thread = &vm->threads[vm->thread_count++];
-    thread->local_scope = create_local_scope();
-    thread->current_function = function;
-
+    thread->current_frame = NULL;  // Initialize empty stack
     thread->pc = 0;
     thread->is_running = 1;
-    thread->thread_id = vm->next_thread_id++;  // Assign and increment thread ID
+    thread->thread_id = vm->next_thread_id++;
     thread->vm = vm;
+
+    // Push initial stack frame for the function
+    push_stack_frame(thread, function);
 
     pthread_create(&thread->thread, NULL, execute_thread_instructions, thread);
 
@@ -32,7 +33,7 @@ void* execute_thread_instructions(void* arg) {
     ThreadContext* thread = (ThreadContext*) arg;
     print("[Thread %d] Thread instructions started", thread->thread_id);
 
-    while (thread->is_running && thread->pc < thread->current_function->code_length) {
+    while (thread->is_running && thread->pc < thread->current_frame->function->code_length) {
         execute_bytecode(thread);
         thread->pc++;
     }

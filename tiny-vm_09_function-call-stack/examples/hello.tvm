@@ -1,7 +1,15 @@
-function greet
-set message 42
-print message
+function fun1
+set message 1
+sync fun2
+
+function fun2
+set message 2
+sync fun3
+
+function fun3
+set message 3
+print_stack_trace
 
 function main
-sync greet
+async fun1
 exit

@@ -66,6 +66,13 @@ Instruction parse_instruction(const char* line) {
         instr.type = FUNCTION;
         sscanf(line, "%s %s", cmd, instr.args[0]);  // args[0] will contain function name
     }
+    else if (strcmp(cmd, "print_stack_trace") == 0) {
+        instr.type = PRINT_STACK_TRACE;
+        // No arguments needed for print_stack_trace
+    }
+    else {
+        print("[VM] Error: Unknown instruction: %s", line);
+    }
     // print("[VM] Instruction parsed: %s", line);
     return instr;
 }

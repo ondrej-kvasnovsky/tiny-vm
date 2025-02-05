@@ -17,6 +17,7 @@ typedef enum {
     OP_INVOKE_SYNC  = 0x08,    // Call function synchronously
     OP_INVOKE_ASYNC = 0x09,    // Call function asynchronously
     OP_RETURN       = 0x0A,    // Return from function
+    OP_PRINT_STACK_TRACE = 0x0B, // Print current stack trace
 } OpCode;
 
 // Bytecode instruction format
